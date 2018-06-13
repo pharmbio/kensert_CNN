@@ -81,7 +81,7 @@ def img_preprocess(i, index, dims):
 
     image = cv2.imread(path + "%s.png" % index[i])
     resized_image = cv2.resize(image, (height, width), interpolation=cv2.INTER_AREA)
-    func = randomize_func(nor_0, nor_180, mir_0, mir_180)
+    func = randomize_func(nor_0, nor_90, nor_180, nor_270, mir_0, mir_90, mir_180, mir_270)
     transformed_image = func(resized_image)
     transformed_image = noisy(transformed_image)
     #transformed_image = transformed_image.astype(np.float32)
