@@ -35,9 +35,9 @@ def load_test_set(compound, dims):
     for j,i in enumerate(test_index):
         image_test = cv2.imread(path + "%s.png" % str(i))
         resized_image_test = cv2.resize(image_test, (height, width), interpolation=cv2.INTER_AREA)
-        resized_image_test = resized_image_test.astype(np.float32)
-        resized_image_test /= 127.5
-        resized_image_test -= 1.
+        #resized_image_test = resized_image_test.astype(np.float32)
+        #resized_image_test /= 127.5
+        #resized_image_test -= 1.
         X_test[j] = resized_image_test#cv2.imread(path + "%s.png" % str(i))
 
     return X_test, Y_test
