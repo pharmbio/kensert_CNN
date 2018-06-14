@@ -18,7 +18,7 @@ compounds = ["PP-2",           "AZ-J",                 "AZ-U",                  
              "etoposide",      "chlorambucil",         "cisplatin",     "mitomycin C",             # DNA-damage
              "simvastatin",    "mevinolin/lovastatin",                                             # Cholesterol-lowering
              "AZ841",          "AZ-A",                 "AZ258",                                    # Aurora kinase inhibitors
-             "cytochalasin B", "latrunculin B",        "cytochalasin D"]                                                                     # Actin disruptors
+             "cytochalasin B", "latrunculin B",        "cytochalasin D"]                           # Actin disruptors
 
 model_type = "ResNet50"
 for compound in compounds:
@@ -31,10 +31,7 @@ for compound in compounds:
                                 initial_lr=0.0005,
                                 drop_lr=0.5,
                                 epochs_drop_lr=1.0,
-                                min_delta= 0.005,
-                                patience = 100,
                                 momentum = 0.9,
-                                name     = model_type,
                                 weights  = "imagenet",
                                 compound = compound,
                                 gpus = 0)

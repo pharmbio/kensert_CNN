@@ -5,29 +5,44 @@ from PIL import Image
 
 
 # Define y-labels and dimensions of the images.
-moa_dict = {'Actin disruptors': 0,          'Aurora kinase inhibitors': 1, 'Cholesterol-lowering': 2,
+moa_dict = {
+            'Actin disruptors': 0,          'Aurora kinase inhibitors': 1, 'Cholesterol-lowering': 2,
             'Eg5 inhibitors': 3,            'Epithelial': 4,               'Kinase inhibitors': 5,
             'Microtubule destabilizers': 6, 'Microtubule stabilizers': 7,  'Protein degradation': 8,
-            'Protein synthesis': 9,         'DNA replication': 10,         'DNA damage': 11}
+            'Protein synthesis': 9,         'DNA replication': 10,         'DNA damage': 11
+            }
 
+labels         = pd.read_csv('bbbc021_labels.csv', sep=";")
+path           = 'images_transformed_cropped/bbbc021_'
+moa            = np.array(labels['moa'])
+compounds      = np.array(labels['compound'])
+concentrations = np.array(labels['concentration'])
+replicates     = np.array(labels['replicate'])
 
-labels      = pd.read_csv('BBBC021_MCF7_labels_cropped.csv', sep=";")
-path        =             'images_transformed_cropped/BBBC021_MCF7_'
-y_moa       = np.array(labels['moa'])
-y_compounds = np.array(labels['compound'])
-y_conc      = np.array(labels['concentration'])
-y_repl      = np.array(labels['replicate'])
+def class_weights(compound):
+    y_train = moa[np.where(compounds != compound)[0]]
+    y_train = np.asarray([moa_dict[item] for item in y_train])
+    y_train = convert_to_one_hot(y_train, 12)
+    weights = np.array(list((y_train.shape[0]/(y_train.shape[1]*np.array([y_train[:,i].sum() for i in range(y_train.shape[1])])))))
+    class_weights_dict = {}
+    for i in range(len(weights)):
+        class_weights_dict[i] = weights[i]
+    return class_weights_dict
 
 def convert_to_one_hot(Y, C):
     Y = np.eye(C)[Y]
     return Y
 
+def smooth_labels(labels, eps):
+    n_classes = labels.shape[0]
+    return labels * (1 - eps) + (1 - labels) * eps / (n_classes - 1.0)
+
 def load_test_set(compound, dims):
     height, width, channels = dims
     # Prepare test set
-    test_index  = np.where(y_compounds == compound)[0]
+    test_index  = np.where(compounds == compound)[0]
 
-    Y_test = y_moa[test_index]
+    Y_test = moa[test_index]
     Y_test = np.asarray([moa_dict[item] for item in Y_test])
     Y_test = convert_to_one_hot(Y_test, 12)
 
@@ -49,8 +64,10 @@ def noisy(image):
 
     shade_percent = np.random.choice([0, 0.5])
     image *= (1 - shade_percent)
-    filter_size = 3
-    image = cv2.blur(image,(filter_size,filter_size))
+
+    if np.random.choice([0, 1]) == 1:
+        filter_size = 3
+        image = cv2.blur(image,(filter_size,filter_size))
     #var   = np.random.choice([0, 50])
     #sigma = var**0.5
     #mean  = 0
@@ -89,10 +106,6 @@ def img_preprocess(i, index, dims):
     #transformed_image -= 1.
     return transformed_image
 
-def smooth_labels(labels, eps):
-    n_classes = labels.shape[0]
-    return labels * (1 - eps) + (1 - labels) * eps / (n_classes - 1.0)
-
 def generator(index, classes, batch_size, dims):
     height, width, channels = dims
     # Create empty arrays to contain batch of features and labels#
@@ -115,13 +128,14 @@ def generator(index, classes, batch_size, dims):
             batch_labels[j] = label
             #smooth_labels(label, eps)
             i += 1
+
         yield batch_features, batch_labels
 
 
 def treatment_prediction(compound, probs):
-    test_index  = np.where(y_compounds == compound)[0]
-    conc_unique = list(set(y_conc[test_index]))
-    repl_unique = list(set(y_repl[test_index]))
+    test_index  = np.where(compounds == compound)[0]
+    conc_unique = list(set(concentrations[test_index]))
+    repl_unique = list(set(replicates[test_index]))
 
     n_conc = len(conc_unique)
     predictions   = np.zeros((n_conc,), dtype="uint8")
@@ -132,7 +146,7 @@ def treatment_prediction(compound, probs):
         sub_preds_median = np.zeros((n_repl, 12))
 
         for j, repl in enumerate(repl_unique):
-            test_repl = np.where((y_repl[test_index] == repl) & (y_conc[test_index] == conc))[0]
+            test_repl = np.where((replicates[test_index] == repl) & (concentrations[test_index] == conc))[0]
 
             if test_repl.shape[0] > 0:
                 sub_pred = np.array(probs)[test_repl]
@@ -141,15 +155,4 @@ def treatment_prediction(compound, probs):
         predictions[i] = np.argmax(np.median(np.array(sub_preds_median), axis=0), axis=0)
         probabilities[i] = np.median(np.array(sub_preds_median), axis=0)
 
-    return predictions, conc_unique, probabilities
-
-
-def class_weights(compound):
-    y_train = y_moa[np.where(y_compounds != compound)[0]]
-    y_train = np.asarray([moa_dict[item] for item in y_train])
-    y_train = convert_to_one_hot(y_train, 12)
-    weights = np.array(list((y_train.shape[0]/(y_train.shape[1]*np.array([y_train[:,i].sum() for i in range(y_train.shape[1])])))))
-    class_weights_dict = {}
-    for i in range(len(weights)):
-        class_weights_dict[i] = weights[i]
-    return class_weights_dict
+    return predictions, probabilities, conc_unique

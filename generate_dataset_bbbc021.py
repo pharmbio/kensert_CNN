@@ -3,18 +3,14 @@ import pandas as pd
 import os
 from PIL import Image
 
-while True:
-    q1 = input("Crop images? y or n: ")
-    if q1 != "y" and q1 != "n":
-        print("Please answer 'y' or 'n'")
-        continue
-    else:
-        break
-crops = 4 if q1 == "y" else 1
+
 
 dirname = input("Enter directory name of plate folders: ")
 if not (any("BBBC021_v1_image.csv" in s for s in os.listdir(dirname)) and any("BBBC021_v1_moa.csv" in s for s in os.listdir(dirname))):
     raise ValueError("BBBC021_v1_image.csv and BBBC021_v1_moa.csv need to be in directory")
+
+# the number of cropped images from the original image
+crops = 4
 
 def slide_window(img, dims=(512, 640)):
     window_height, window_width = dims
@@ -32,20 +28,9 @@ def slide_window(img, dims=(512, 640)):
         col += window_width
     return crop_images
 
-def gamma_cor(img, gamma):
-    return 255 * (img/255)**(gamma)
-
 def anscombe(x):
     x = x.astype(np.float32)
     return (2.0*np.sqrt(x + 3.0/8.0))
-
-def inverse_anscombe(z):
-    z = z.astype(np.float32)
-    #return (z/2.0)**2 - 3.0/8.0
-    return (1.0/4.0 * np.power(z, 2) +
-            1.0/4.0 * np.sqrt(3.0/2.0) * np.power(z, -1.0) -
-            11.0/8.0 * np.power(z, -2.0) +
-            5.0/8.0 * np.sqrt(3.0/2.0) * np.power(z, -3.0) - 1.0 / 8.0)
 
 def DMSO_normalization(x,y,idx,crops,rm_imgs):
     '''
@@ -69,27 +54,18 @@ def DMSO_normalization(x,y,idx,crops,rm_imgs):
         # NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
 
         # Map to 8-bit int
-        if crops == 1:
-            OldRange = (x[i,:,:,:].max() - x[i,:,:,:].min())
-            NewRange = (255 - 0)
-            xt = (((x[i,:,:,:] - x[i,:,:,:].min()) * NewRange) / OldRange) + 0
-            #xt = gamma_cor(xt, gamma=0.5)
-            img = Image.fromarray(xt.astype('uint8'))
+        OldRange = (x[i,:,:,:].max() - x[i,:,:,:].min())
+        NewRange = (255 - 0)
+        xt = (((x[i,:,:,:] - x[i,:,:,:].min()) * NewRange) / OldRange) + 0
+        imgs = slide_window(xt)
+        for i,img in enumerate(imgs):
+            if ((img > (NewRange/5.1)).sum()/img.size) <= 0.002:
+                rm_imgs.append(i+j)
+
+                continue
+            img_cropped = Image.fromarray(img.astype("uint8"))
             # Save images to directory
-            img.save("images_transformed_full/BBBC021_MCF7_%s.png" % str(j))
-        else:
-            OldRange = (x[i,:,:,:].max() - x[i,:,:,:].min())
-            NewRange = (255 - 0)
-            xt = (((x[i,:,:,:] - x[i,:,:,:].min()) * NewRange) / OldRange) + 0
-            imgs = slide_window(xt)
-            for i,img in enumerate(imgs):
-                if ((img > (NewRange/5.1)).sum()/img.size) <= 0.002:
-                    rm_imgs.append(i+j)
-                    print(rm_imgs)
-                    continue
-                img_cropped = Image.fromarray(img.astype("uint8"))
-                # Save images to directory
-                img_cropped.save("images_transformed_cropped/BBBC021_MCF7_%s.png" % str(j+i-len(rm_imgs)))
+            img_cropped.save("images_transformed_cropped/bbbc021_%s.png" % str(j+i-len(rm_imgs)))
 
     return
 
@@ -155,23 +131,23 @@ for f in (f for f in os.listdir(dirname) if 'Week' in f):
             # And all different rotations/mirrors (x 8).
             if row['Image_Metadata_Compound'] != 'DMSO':
                 [labels.append([mechanism.values.tolist()[0][0],
-                               mechanism.values.tolist()[0][1],
-                               mechanism.values.tolist()[0][2],
-                               row['Image_Metadata_Plate_DAPI'],
-                               row['Image_Metadata_Well_DAPI'],
-                               row['Replicate']]) for i in range(crops)]
+                                mechanism.values.tolist()[0][1],
+                                mechanism.values.tolist()[0][2],
+                                row['Image_Metadata_Plate_DAPI'],
+                                row['Image_Metadata_Well_DAPI'],
+                                row['Replicate']]) for i in range(crops)]
 
                 idx.append(count)
                 count += crops
 
             plate_Y.append([mechanism.values.tolist()[0][0],
-                           mechanism.values.tolist()[0][1],
-                           mechanism.values.tolist()[0][2],
-                           row['Image_Metadata_Plate_DAPI'],
-                           row['Image_Metadata_Well_DAPI'],
-                           row['Replicate']])
+                            mechanism.values.tolist()[0][1],
+                            mechanism.values.tolist()[0][2],
+                            row['Image_Metadata_Plate_DAPI'],
+                            row['Image_Metadata_Well_DAPI'],
+                            row['Replicate']])
 
-    plate_Y = np.asarray(plate_Y)
+    plate_Y      = np.asarray(plate_Y)
     dmso_idx     = np.where(plate_Y[:,0] == "DMSO")[0]
     non_dmso_idx = np.where(plate_Y[:,0] != "DMSO")[0]
 
@@ -183,14 +159,9 @@ for f in (f for f in os.listdir(dirname) if 'Week' in f):
     print('Number of compounds transformed = ' + str(count) + '; dataset = ' + str(dataset))
     dataset += 1
 
+for index in sorted(rm_imgs, reverse=True):
+    del labels[index]
 
-if crops == 1:
-    df = pd.DataFrame(labels)
-    df.to_csv('BBBC021_MCF7_labels_full.csv',
-              header=["compound", "concentration", "moa", "plate", "well", "replicate"], sep=';')
-else:
-    for index in sorted(rm_imgs, reverse=True):
-        del labels[index]
-    df = pd.DataFrame(labels)
-    df.to_csv('BBBC021_MCF7_labels_cropped.csv',
-              header=["compound", "concentration", "moa", "plate", "well", "replicate"], sep=';')
+df = pd.DataFrame(labels)
+df.to_csv('bbbc021_labels.csv',
+          header=["compound", "concentration", "moa", "plate", "well", "replicate"], sep=';')
