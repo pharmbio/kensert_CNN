@@ -1,8 +1,9 @@
 import CNN_bbbc021
 #from keras.models import load_model
 """
-Settings below were the settings for the ResNet50 model; Inception_v3 should have 5 epochs and epoch_drop_lr 2.0;
-Inception_Resnet_v2 should have 6 epochs and initial_lr 0.001. The inception models simply required more training.
+To run Inceptionv3 or InceptionResnetv2, change model_type to Inception_v3 or Inception_Resnet_v2 respectively. 
+
+Number of epochs should be increased if more learning is needed.
 """
 
 
