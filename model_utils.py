@@ -63,8 +63,8 @@ def noisy(image):
     image = image.astype(np.float32)
 
     for i in range(ch):
-        shade_percent = np.random.choice([0., 0., .25, -.25])
-        image[:,:,i] *= (1 - shade_percent)
+        jitter_percent = np.random.choice([0., 0., .25, -.25])
+        image[:,:,i] *= (1 - jitter_percent)
     if np.random.choice([0,1]) == 1:
         filter_size = 3
         image = cv2.blur(image,(filter_size,filter_size))

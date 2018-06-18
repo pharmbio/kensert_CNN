@@ -5,21 +5,26 @@ from PIL import Image
 
 def noisy(image):
     row,col,ch= image.shape
-    image = image.astype(np.float64)
-    #var   = np.random.choice([0,1000])
-    #sigma = var**0.5
-    #mean  = 0
-    shade_percent       = np.random.choice([0., 0.5])
-    image *= (1 - shade_percent)
-    if np.random.choice([0, 0]) == 1:
+    image = image.astype(np.float32)
+
+    for i in range(ch-1):
+        jitter_percent = np.random.choice([0., 0., .25, -.25])
+        image[:,:,i] *= (1 - jitter_percent)
+    if np.random.choice([0,1]) == 1:
         filter_size = 3
         image = cv2.blur(image,(filter_size,filter_size))
-        #gauss = np.random.normal(mean,sigma,(row,col,ch-1))
-        #gauss = gauss.reshape(row,col,ch-1)
-        #image[:,:,1:] += gauss
-        #image[:,:,1:][image[:,:,1:] < 0] = 0
-        #image[:,:,1:][image[:,:,1:] > 255] = 255
-    return image.astype("uint8")
+    if np.random.choice([0,1]) == 1:
+        var   = 50
+        sigma = var**0.5
+        mean  = 0
+        gauss = np.random.normal(mean,sigma,(row,col,ch))
+        gauss = gauss.reshape(row,col,ch)
+        image += gauss
+
+    image[image < 0] = 0
+    image[image > 255] = 255
+
+    return image
 
 def randomize_func(*args):
     return np.random.choice(args)

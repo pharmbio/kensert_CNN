@@ -5,7 +5,7 @@ from skimage.transform import resize
 import numpy as np
 import cv2
 
-path = "../DNN/BBBC014_v1_images/"
+path = "BBBC014_v1_images/"
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):
     parts = numbers.split(value)
