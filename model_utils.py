@@ -48,6 +48,7 @@ def load_test_set(compound, dims):
 
     X_test = np.zeros((len(test_index), height, width, channels))
     for j,i in enumerate(test_index):
+        # reading images with cv2 will make "RGB" into "BGR"
         image_test = cv2.imread(path + "%s.png" % str(i))
         resized_image_test = cv2.resize(image_test, (height, width), interpolation=cv2.INTER_AREA)
         #resized_image_test = resized_image_test.astype(np.float32)
@@ -61,21 +62,22 @@ def noisy(image):
     row,col,ch= image.shape
     image = image.astype(np.float32)
 
-
-    shade_percent = np.random.choice([0, 0.5])
-    image *= (1 - shade_percent)
-
-    if np.random.choice([0, 1]) == 1:
+    for i in range(ch):
+        shade_percent = np.random.choice([0., 0., .25, -.25])
+        image[:,:,i] *= (1 - shade_percent)
+    if np.random.choice([0,1]) == 1:
         filter_size = 3
         image = cv2.blur(image,(filter_size,filter_size))
-    #var   = np.random.choice([0, 50])
-    #sigma = var**0.5
-    #mean  = 0
-    #gauss = np.random.normal(mean,sigma,(row,col,ch))
-    #gauss = gauss.reshape(row,col,ch)
-    #image += gauss
-    #image[image < 0] = 0
-    #image[image > 255] = 255
+    if np.random.choice([0,1]) == 1:
+        var   = 50
+        sigma = var**0.5
+        mean  = 0
+        gauss = np.random.normal(mean,sigma,(row,col,ch))
+        gauss = gauss.reshape(row,col,ch)
+        image += gauss
+
+    image[image < 0] = 0
+    image[image > 255] = 255
 
     return image
 
