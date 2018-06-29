@@ -7,9 +7,9 @@ clf = CNN_bbbc014.CNN_Model(cnn_model = model_name,
                             regularization=0.0,
                             epochs = 1,
                             batch_size = 16,
-                            lr=0.001,
+                            lr=0.005,
                             momentum = 0.9,
                             weights = "imagenet")
 
 clf.extend_model()
-clf.eval()
+clf.fit_and_eval()

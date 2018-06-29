@@ -42,11 +42,11 @@ def normalization(x, sample=None):
 
         # NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
         OldRange = (x[j,:,:,1:].max() - x[j,:,:,1:].min())
-        NewRange = (1 - 0)
+        NewRange = (255 - 0)
         x[j,:,:,1:] = (((x[j,:,:,1:] - x[j,:,:,1:].min()) * NewRange) / OldRange) + 0
 
         # Map to 8-bit int
-        x[j,:,:,1:] *= 255
+        #x[j,:,:,1:] *= 255
         img = Image.fromarray(x[j].astype('uint8'))
 
         # save image to folder

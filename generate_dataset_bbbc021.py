@@ -65,7 +65,7 @@ def DMSO_normalization(x,y,idx,crops,rm_imgs):
                 continue
             img_cropped = Image.fromarray(img.astype("uint8"))
             # Save images to directory
-            img_cropped.save("images_transformed_cropped/bbbc021_%s.png" % str(j+i-len(rm_imgs)))
+            img_cropped.save("images_bbbc021/bbbc021_%s.png" % str(j+i-len(rm_imgs)))
 
     return
 

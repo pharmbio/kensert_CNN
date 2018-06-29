@@ -1,4 +1,6 @@
 import Keras_ResNet50
+import Keras_Inception_v3
+import Keras_Inception_Resnet_v2
 import model_utils_bbbc014 as mu
 from keras.optimizers import Adam, SGD
 import numpy as np
@@ -60,7 +62,7 @@ class CNN_Model(object):
 
         return extended_model
 
-    def eval(self):
+    def fit_and_eval(self):
         # load labels; 512 labels, first 256 instances are MCF7 cell lines, second 256 instances are A549 cell lines.
         labels      = np.load("bbbc014_labels.npy")
         sample_all  = np.array(range(1024))

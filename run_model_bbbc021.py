@@ -1,7 +1,7 @@
 import CNN_bbbc021
 #from keras.models import load_model
 """
-To run Inceptionv3 or InceptionResnetv2, change model_type to Inception_v3 or Inception_Resnet_v2 respectively. 
+To run Inceptionv3 or InceptionResnetv2, change model_type to Inception_v3 or Inception_Resnet_v2 respectively.
 
 Number of epochs should be increased if more learning is needed.
 """

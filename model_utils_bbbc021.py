@@ -13,7 +13,7 @@ moa_dict = {
             }
 
 labels         = pd.read_csv('bbbc021_labels.csv', sep=";")
-path           = 'images_transformed_cropped/bbbc021_'
+path           = 'images_bbbc021/bbbc021_'
 moa            = np.array(labels['moa'])
 compounds      = np.array(labels['compound'])
 concentrations = np.array(labels['concentration'])
