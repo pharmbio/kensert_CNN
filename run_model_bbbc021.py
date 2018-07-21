@@ -1,9 +1,14 @@
 import CNN_bbbc021
-#from keras.models import load_model
-"""
-To run Inceptionv3 or InceptionResnetv2, change model_type to Inception_v3 or Inception_Resnet_v2 respectively.
+from keras import backend as K
 
-Number of epochs should be increased if more learning is needed.
+"""
+Below are the settings for our ResNet50;
+Change model_type to "Inception_v3", set epochs to 7 and dims to (299,299,3) to run "our" InceptionV3;
+Change model_type to "Inception_Resnet_v2", set epochs to 5, initial_lr to 0.001 and dims to (299,299,3) to run "our" InceptionResnetV3.
+
+Note that the models may vary significantly from session to session due to stochastic processes of mini-batch gradient descent.
+
+epochs_drop_lr is set to a greater value than epochs. Hence the initial_lr will be the learning rate throughout the entire training session.
 """
 
 
@@ -23,6 +28,7 @@ compounds = ["PP-2",           "AZ-J",                 "AZ-U",                  
 
 model_type = "ResNet50"
 for compound in compounds:
+    K.clear_session()
     clf = CNN_bbbc021.CNN_Model(cnn_model = model_type,
                                 dims  = (224,224,3),
                                 classes = 12,
@@ -39,5 +45,4 @@ for compound in compounds:
 
     model = clf.compile_model()
     trained_model = clf.fit_model(model)
-    #trained_model.save('model.h5')
     clf.predict_model(trained_model)

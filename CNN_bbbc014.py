@@ -8,7 +8,7 @@ import pandas as pd
 import csv
 from PIL import Image
 import cv2
-from skimage.transform import resize
+#from skimage.transform import resize
 
 from keras.layers import Input
 from keras.layers import Dense
@@ -23,10 +23,10 @@ class CNN_Model(object):
 
     def __init__(self,
                  cnn_model = "ResNet50",
-                 dims  = (224,224,3),
-                 regularization=0.0001,
+                 dims  = (256,256,3),
+                 regularization=0.0,
                  epochs = 1,
-                 batch_size = 16,
+                 batch_size = 8,
                  lr=0.001,
                  momentum = 0.9,
                  weights = "imagenet"):

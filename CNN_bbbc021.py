@@ -29,7 +29,6 @@ from keras.models import Model
 from keras.callbacks import LearningRateScheduler
 from keras.callbacks import CSVLogger
 
-# learning rate schedule
 class CNN_Model(object):
 
     def __init__(self,
@@ -125,9 +124,9 @@ class CNN_Model(object):
         lrate          = LearningRateScheduler(step_decay, verbose=1)
 
         callbacks_list = [lrate, csv_logger]
-        # Index will point at both the Y_labels as well as the images to be imported in model_utils.generator
+        # Index will point at both the Y_labels and images to be imported in model_utils.generator
         index      = np.where(labels['compound'] != self.compound)[0]
-        # Calculate Class_weights
+        # Calculate class weights
         class_weight = model_utils.class_weights(self.compound)
         # Step size (usually input rows divided by batch size)
         steps      = index.shape[0]/self.batch_size
