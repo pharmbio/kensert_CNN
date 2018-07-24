@@ -1,8 +1,8 @@
-# Deep Transfer learning with fine-tuning
+# Deep transfer learning with fine-tuning
 
 ## Versions
-Python 3.5.4
-Tensorflow 1.8.0
+Python 3.5.4<br/>
+Tensorflow 1.8.0<br/>
 Keras 2.1.6
 
 ## 1a. BBBC021v1

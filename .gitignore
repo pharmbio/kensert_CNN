@@ -1,7 +1,5 @@
 # Own
 .DS_Store
-results.xlsx
-resnet_model/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
