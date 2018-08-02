@@ -1,5 +1,6 @@
 # Own
 .DS_Store
+plots2.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

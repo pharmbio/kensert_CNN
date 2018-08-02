@@ -3,8 +3,8 @@ from keras import backend as K
 
 """
 Below are the settings for our ResNet50;
-Change model_type to "Inception_v3", set epochs to 7 and dims to (299,299,3) to run "our" InceptionV3;
-Change model_type to "Inception_Resnet_v2", set epochs to 5, initial_lr to 0.001 and dims to (299,299,3) to run "our" InceptionResnetV3.
+Change model_type to "Inception_v3" and dims to (299,299,3) to run InceptionV3;
+Change model_type to "Inception_Resnet_v2" and dims to (299,299,3) to run InceptionResnetV3.
 
 Note that the models may vary significantly from session to session due to stochastic processes of mini-batch gradient descent.
 
@@ -33,11 +33,11 @@ for compound in compounds:
                                 dims  = (224,224,3),
                                 classes = 12,
                                 regularization=0.0,
-                                epochs = 5,
-                                batch_size = 32,
-                                initial_lr=0.0005,
+                                epochs = 10,
+                                batch_size = 8,
+                                initial_lr=0.0001,
                                 drop_lr=0.5,
-                                epochs_drop_lr=10.0,
+                                epochs_drop_lr=100.0,
                                 momentum = 0.9,
                                 weights  = "imagenet",
                                 compound = compound,
