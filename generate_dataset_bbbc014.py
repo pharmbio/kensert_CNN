@@ -5,7 +5,7 @@ from skimage.transform import resize
 import numpy as np
 import cv2
 
-path = "BBBC014_v1_images/"
+path = "./BBBC014_v1_images/"
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):
     parts = numbers.split(value)
@@ -51,9 +51,9 @@ def normalization(x, sample=None):
 
         # save image to folder
         if sample == 1:
-            img.save("images_bbbc014/bbbc014_%s.png" % j)
+            img.save("./images_bbbc014/bbbc014_%s.png" % j)
         elif sample == 2:
-            img.save("images_bbbc014/bbbc014_%s.png" % str(j+512))
+            img.save("./images_bbbc014/bbbc014_%s.png" % str(j+512))
         else: pass
     return
 

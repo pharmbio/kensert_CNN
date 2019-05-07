@@ -40,6 +40,7 @@ class CNN_Model(object):
         self.momentum = momentum
         self.weights = weights
 
+
     def extend_model(self):
 
         """
@@ -113,5 +114,8 @@ class CNN_Model(object):
                 writer.writerow(["Prediciton (first row) vs True (second row):"])
                 writer.writerow(probas)
                 writer.writerow(trues)
+
+            filename = "saved_bbbc014_{}.h5".format(self.cnn_model)
+            model.save(filename)
 
         return

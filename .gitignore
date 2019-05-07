@@ -1,6 +1,9 @@
 # Own
 .DS_Store
 plots2.ipynb
+images_bbbc014/*
+BBBC014_v1_images/*
+bbbc014_labels.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
