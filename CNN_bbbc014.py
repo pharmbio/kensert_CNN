@@ -115,7 +115,7 @@ class CNN_Model(object):
                 writer.writerow(probas)
                 writer.writerow(trues)
 
-            filename = "saved_bbbc014_{}.h5".format(self.cnn_model)
+            filename = "saved_model.h5".format(self.cnn_model)
             model.save(filename)
 
         return
