@@ -9,14 +9,16 @@ Note that the models may vary significantly from session to session due to stoch
 
 model_type = "ResNet50"
 
-clf = CNN_bbbc014.CNN_Model(cnn_model = model_type,
+model = CNN_bbbc014.CNN_Model(cnn_model = model_type,
                             dims  = (256,256,3),
                             regularization=0.0,
                             epochs = 1,
                             batch_size = 8,
                             lr=0.001,
                             momentum = 0.9,
-                            weights = "imagenet")
+                            weights = "imagenet",
+                            images_path = "images_bbbc014/bbbc014_")
 
-clf.extend_model()
-clf.fit_and_eval()
+model.extend_model()
+model.fit_model()
+model.eval_model()
