@@ -21,6 +21,4 @@ model = CNN_bbbc014.CNN_Model(cnn_model = model_type,
                             sample_length = 1024,
                             train_split = 51/64)
 
-#model.extend_model()
 model.fit_model()
-model.eval_model()

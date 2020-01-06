@@ -1,0 +1,5 @@
+keras==2.1.6
+opencv-python
+pillow
+scikit-image
+sklearn
