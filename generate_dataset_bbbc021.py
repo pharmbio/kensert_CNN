@@ -9,6 +9,7 @@ dirname = input("Enter directory name of plate folders: ")
 if not (any("BBBC021_v1_image.csv" in s for s in os.listdir(dirname)) and any("BBBC021_v1_moa.csv" in s for s in os.listdir(dirname))):
     raise ValueError("BBBC021_v1_image.csv and BBBC021_v1_moa.csv need to be in directory")
 
+print("Found the files, starting the program to process the images.")
 # the number of cropped images from the original image
 crops = 4
 
@@ -159,9 +160,13 @@ for f in (f for f in os.listdir(dirname) if 'Week' in f):
     print('Number of compounds transformed = ' + str(count) + '; dataset = ' + str(dataset))
     dataset += 1
 
+    
+print("Finished transforming compounds. Starting on adjusting the labels.")    
 for index in sorted(rm_imgs, reverse=True):
     del labels[index]
 
 df = pd.DataFrame(labels)
 df.to_csv('bbbc021_labels.csv',
           header=["compound", "concentration", "moa", "plate", "well", "replicate"], sep=';')
+
+print("Finished adjusting labels. Image processing has finished.")
